@@ -6,7 +6,11 @@ paginationModule.factory('Pagination', function() {
 
   var pagination = {};
 
-  pagination.getNew = function(perPage) {
+  pagination.getNew = function(perPage, cback) {
+    if (! cback) {
+      cback = function() {};
+
+    }
 
     perPage = perPage === undefined ? 5 : perPage;
 
@@ -19,18 +23,29 @@ paginationModule.factory('Pagination', function() {
     paginator.prevPage = function() {
       if (paginator.page > 0) {
         paginator.page -= 1;
+        cback();
       }
     };
+    paginator.calculatePageByData = function(array) {
+      if (!(array && array.length > 0)) {
+        //if we have no current questions on our page
+        //decrement the page safely so we can request the next one
+        paginator.page = paginator.page > 0  ? paginator.page - 1 : 0 ;
+        }
+
+    }
 
     paginator.nextPage = function() {
       if (paginator.page < paginator.numPages - 1) {
         paginator.page += 1;
+        cback();
       }
     };
 
     paginator.toPageId = function(id) {
       if (id >= 0 && id <= paginator.numPages - 1) {
         paginator.page = id;
+        cback();
       }
     };
 
